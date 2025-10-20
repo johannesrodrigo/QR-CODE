@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QR Bridge</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:24px;background:#fafafa;color:#111}
+    .card{max-width:720px;margin:auto;border:1px solid #e5e7eb;border-radius:12px;padding:20px;box-shadow:0 1px 8px rgba(0,0,0,.06);background:#fff}
+    .h{font-size:20px;font-weight:700;margin:0 0 12px}
+    .m{color:#6b7280;font-size:14px}
+    a{color:#2563eb}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="h">Redirigiendo…</div>
+    <div class="m" id="msg">Un momento…</div>
+  </div>
+  <script>
+    (async () => {
+      try {
+        const res = await fetch('config.json?_=' + Date.now(), {cache: 'no-store'});
+        const cfg = await res.json();
+        const base = (cfg.BASE_APP_URL || '').replace(/\/+$/,'');
+        if(!base){ throw new Error('BASE_APP_URL vacío en config.json'); }
+        const target = base + '/driver' + (window.location.search || '');
+        document.getElementById('msg').innerHTML =
+          'Si no redirige en 1s, toca <a href="'+target+'">aquí</a>.';
+        window.location.replace(target);
+      } catch (e) {
+        document.getElementById('msg').textContent =
+          'Error de configuración del puente: ' + (e && e.message ? e.message : e);
+      }
+    })();
+  </script>
+</body>
+</html>
